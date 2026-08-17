@@ -1,0 +1,36 @@
+{
+  "plugins": [
+    {
+      "enabled": true,
+      "name": "anthropic-inference-hooks",
+      "path": "/opt/bifrost/plugins/bifrost-anthropic-inference-hooks.so",
+      "version": 1,
+      "config": {
+        "listen_addr": ":8081",
+        "path": "/anthropic/inference-hooks",
+        "signing_secrets": ["whsec_REPLACE_ME"],
+        "allow_unsigned": false,
+        "fail_mode": "allow",
+        "shadow_mode": true,
+        "max_body_bytes": 11534336,
+        "deny_rules": [
+          {
+            "name": "payment-card",
+            "pattern": "\\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13})\\b",
+            "reason": "This prompt appears to contain payment card data. Remove the card number and try again."
+          },
+          {
+            "name": "aws-access-key",
+            "pattern": "\\b(?:AKIA|ASIA)[0-9A-Z]{16}\\b",
+            "reason": "This prompt appears to contain an AWS access key. Rotate it and remove it from the prompt."
+          },
+          {
+            "name": "private-key-block",
+            "pattern": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+            "reason": "This prompt appears to contain a private key, which your organization's policy does not allow."
+          }
+        ]
+      }
+    }
+  ]
+}
